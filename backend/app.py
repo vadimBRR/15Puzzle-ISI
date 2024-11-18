@@ -39,7 +39,6 @@ class SolveRequest(BaseModel):
 
 @app.get("/puzzle", response_model=PuzzleStateResponse)
 async def get_state():
-    """Отримати поточний стан головоломки."""
     return {
         "tiles": puzzle.get_state(),
         "is_solved": puzzle.is_solved()
@@ -47,13 +46,11 @@ async def get_state():
 
 @app.post("/shuffle")
 async def shuffle_puzzle(request: ShuffleRequest):
-    """Перемішати головоломку."""
     puzzle.shuffle(request.moves)
     return {"message": "Puzzle shuffled", "tiles": puzzle.get_state()}
 
 @app.post("/solve")
 async def solve_puzzle(request: SolveRequest):
-    """Розв'язати головоломку з вибраним алгоритмом."""
     global solver
     solver = Solver(puzzle)  
     

@@ -7,7 +7,6 @@ class Puzzle:
         self.empty_tile = (size - 1, size - 1)
 
     def shuffle(self, moves=100):
-        """Перемішує головоломку випадковими ходами."""
         moves_directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         for _ in range(moves):
             row, col = self.empty_tile
@@ -18,16 +17,13 @@ class Puzzle:
                 self.empty_tile = (new_row, new_col)
 
     def is_solved(self):
-        """Перевіряє, чи є головоломка розв'язаною."""
         goal = list(range(1, self.size ** 2)) + [0]
         return self.tiles == [goal[i:i + self.size] for i in range(0, len(goal), self.size)]
 
     def get_state(self):
-        """Повертає поточний стан головоломки."""
         return self.tiles
 
     def move_tile(self, move):
-        """Рухає порожню плитку у вказаному напрямку, якщо це можливо."""
         row, col = self.empty_tile
         dr, dc = move
         new_row, new_col = row + dr, col + dc
@@ -38,7 +34,6 @@ class Puzzle:
         return False
       
     def apply_move(self, state, move):
-      """Застосовує рух до стану та повертає новий стан."""
       empty_row, empty_col = [(i, row.index(0)) for i, row in enumerate(state) if 0 in row][0]
       dr, dc = move
       new_row, new_col = empty_row + dr, empty_col + dc

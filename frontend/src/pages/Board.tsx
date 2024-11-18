@@ -76,7 +76,7 @@ const Board = () => {
               {row.map((tile, tileIndex) => (
                 <div
                   key={tileIndex}
-                  className='border border-black  w-24 h-24 flex items-center justify-center text-4xl'
+                  className='border border-white  w-24 h-24 flex items-center justify-center text-4xl'
                 >
                   {tile}
                 </div>
