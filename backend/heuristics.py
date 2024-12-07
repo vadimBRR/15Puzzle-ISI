@@ -10,9 +10,10 @@ def manhattan_distance(state):
 
 def misplaced_tiles(state):
     misplaced = 0
-    goal = list(range(1, len(state) * len(state[0]))) + [0]
-    for i in range(len(state)):
-        for j in range(len(state[i])):
-            if state[i][j] != 0 and state[i][j] != goal[i * len(state) + j]:
+    size = len(state)
+    goal = list(range(1, size ** 2)) + [0]
+    for i in range(size):
+        for j in range(size):
+            if state[i][j] != 0 and state[i][j] != goal[i * size + j]:
                 misplaced += 1
     return misplaced
