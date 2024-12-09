@@ -224,29 +224,33 @@ async def get_all_results(db: Session = Depends(get_db)) -> Any:
         }
         for result in results
     ]
-    
 @app.get("/statistics")
 async def get_statistics(db: Session = Depends(get_db), limit: int = 10, size: int = 3):
     methods = ["dfs", "a_star", "greedy"]
     stats = []
 
     for method in methods:
-        results = db.query(PuzzleResult).filter(PuzzleResult.method == method, PuzzleResult.size == size, PuzzleResult.is_solved == 1).order_by(PuzzleResult.timestamp.desc()).limit(limit).all()
+        results = db.query(PuzzleResult).filter(
+            PuzzleResult.method == method,
+            PuzzleResult.size == size
+        ).order_by(PuzzleResult.timestamp.desc()).limit(limit).all()
 
         total = len(results)
-        if total == 0:
+        solved_results = [result for result in results if result.is_solved]
+        solved = len(solved_results)
+
+        if solved == 0:  # Якщо немає вирішених задач
             stats.append({
                 "method": method,
                 "size": size,
-                "solved": "0/0",
-                "avgTime": "0.00000000000s",
+                "solved": f"{solved}/{total}",
+                "avgTime": "0.0000000000s",
                 "avgMoves": 0,
             })
             continue
 
-        solved = sum(1 for result in results if result.is_solved)
-        avg_time = sum(result.elapsed_time for result in results) / total
-        avg_moves = sum(result.move_count for result in results) / total
+        avg_time = sum(result.elapsed_time for result in solved_results) / solved
+        avg_moves = sum(result.move_count for result in solved_results) / solved
 
         stats.append({
             "method": method,
