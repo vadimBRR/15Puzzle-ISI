@@ -86,56 +86,66 @@ async def get_state():
 async def shuffle_puzzle(request: ShuffleRequest):
     puzzle.shuffle()
     return {"message": "Puzzle shuffled", "tiles": puzzle.get_state()}
-
 @app.post("/solve")
 async def solve_puzzle(request: SolveRequest, db: Session = Depends(get_db)):
     puzzle.set_state(request.tiles)
-    
     global solver
     solver = Solver(puzzle)
-    
+    batch_id = str(uuid4())
+
+    methods = {
+        "dfs": solver.dfs,
+        "a_star": lambda: solver.a_star(manhattan_distance),
+        "greedy": lambda: solver.greedy_search(misplaced_tiles),
+    }
+
+    if request.method not in methods:
+        raise HTTPException(status_code=400, detail="Invalid solving method.")
+
     try:
-        if request.method == "dfs":
-            solution = solver.dfs()
-        elif request.method == "a_star":
-            solution = solver.a_star(manhattan_distance)
-        elif request.method == "greedy":
-            solution = solver.greedy_search(misplaced_tiles)
+        solve_func = methods[request.method]
+        solution = solve_func()
+        is_solved = solution is not None
+        elapsed_time = solver.elapsed_time
+
+        if solution:
+            board_states = [puzzle.get_state()]
+            current_state = puzzle.get_state()
+
+            for move in solution:
+                current_state = puzzle.apply_move(current_state, move)
+                board_states.append(current_state)
+            move_count = len(solution)
         else:
-            raise HTTPException(status_code=400, detail="Invalid solving method.")
-    except TimeoutError as e:
-        return {"isSolved": False, "elapsedTime": solver.elapsed_time, "error": str(e)}
-
-    if solution is None:
-        return {"isSolved": False, "elapsedTime": solver.elapsed_time, "solvingMethod": request.method}
-
-    board_states = [puzzle.get_state()]
-    current_state = puzzle.get_state()
-
-    for move in solution:
-        current_state = puzzle.apply_move(current_state, move)
-        board_states.append(current_state)
-
-    move_count = len(solution)
-    puzzle.tiles = current_state
+            board_states = None
+            move_count = 0
+    except TimeoutError:
+        is_solved = False
+        solution = None
+        elapsed_time = solver.elapsed_time
+        board_states = None
+        move_count = 0
 
     result = PuzzleResult(
+        batch_id=batch_id,
         method=request.method,
         solution=board_states,
-        elapsed_time=solver.elapsed_time,
+        elapsed_time=elapsed_time if is_solved else 0,
         move_count=move_count,
-        is_solved=1
+        size=puzzle.size,
+        is_solved=1 if is_solved else 0
     )
     db.add(result)
     db.commit()
     db.refresh(result)
 
     return {
+        "batchId": batch_id,
+        "method": request.method,
         "solution": board_states,
-        "isSolved": True,
-        "elapsedTime": solver.elapsed_time,
+        "elapsedTime": elapsed_time,
         "moveCount": move_count,
-        "solvingMethod": request.method
+        "isSolved": is_solved,
     }
 
 

@@ -255,6 +255,7 @@ const Main = () => {
 					{board.status === 'solving' && (
 						<p className='text-yellow-500'>Solving...</p>
 					)}
+
 				</div>
 			</div>
 		)
@@ -289,7 +290,7 @@ const Main = () => {
 								handleClick={handleSpeedDecrease}
 								text='Slow Down'
 								buttonStyle='bg-yellow-500'
-							/>
+                />
 							<p>Speed: {animationSpeed}ms</p>
 							<CustomButton
 								handleClick={handleSpeedIncrease}

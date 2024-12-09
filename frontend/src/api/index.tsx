@@ -44,6 +44,20 @@ export const solveAllPuzzles = async (tiles: number[][]) => {
   return response.json();
 };
 
+export const solvePuzzle = async (tiles: number[][], method: string) => {
+  const response = await fetch(`${API_BASE_URL}/solve`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ tiles, method }),
+  });
+
+  if (!response.ok) throw new Error(`Failed to solve puzzle using method: ${method}`);
+  return response.json();
+};
+
+
 export interface PuzzleResult {
   id: number;
   batchId: string | null;

@@ -6,10 +6,14 @@ const Navbar = () => {
   const [active, setActive] = React.useState(1)
   const navLinks = [
     {id: 1,
-      name: 'Board',
+      name: 'Single',
       link: '/'
     },
     {id: 2,
+      name: 'Together',
+      link: '/all'
+    },
+    {id: 3,
       name: 'Results',
       link: '/results'
     },
@@ -20,7 +24,7 @@ const Navbar = () => {
       <div className='flex flex-row gap-5 items-end'>
         <h1 className='text-2xl text-main'>Magic Puzzle</h1>
         {navLinks.map((item)=>(
-          <Link key={item.id} to={item.link} className={`text-xl ${active === item.id ? 'text-primary' : ''}`} onClick={() => setActive(item.id)}><p>{item.name}</p></Link>
+          <Link key={item.id} to={item.link} className={`text-xl ${active === item.id ? 'text-primary font-bold' : ''}`} onClick={() => setActive(item.id)}><p>{item.name}</p></Link>
           
         ))}
       </div>

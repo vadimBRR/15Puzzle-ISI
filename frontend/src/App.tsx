@@ -3,6 +3,7 @@ import Main from './pages/Main'
 import Results from './pages/Results'
 import Navbar from './components/Navbar'
 import NotFound from './pages/NotFound'
+import SingleSolve from './pages/SingleSolve'
 
 function App() {
 	return (
@@ -12,7 +13,8 @@ function App() {
 			</div>
 			<div className='w-full h-screen mt-12'>
 				<Routes>
-					<Route path='/' element={<Main />} />
+					<Route path='/' element={<SingleSolve />} />
+					<Route path='/all' element={<Main />} />
 					<Route path='/results' element={<Results />} />
 					<Route path='*' element={<NotFound />} />
 				</Routes>
