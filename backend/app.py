@@ -249,7 +249,7 @@ async def get_statistics(db: Session = Depends(get_db), limit: int = 10, size: i
         solved_results = [result for result in results if result.is_solved]
         solved = len(solved_results)
 
-        if solved == 0:  # Якщо немає вирішених задач
+        if solved == 0:  
             stats.append({
                 "method": method,
                 "size": size,
